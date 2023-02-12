@@ -32,3 +32,5 @@ docker stop sql1
 ## Based on
 
 https://github.com/tiangolo/full-stack-fastapi-postgresql
+https://testdriven.io/blog/fastapi-and-celery/
+https://progressstory.com/tech/python/production-ready-celery-configuration/
