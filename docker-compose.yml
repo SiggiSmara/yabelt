@@ -1,0 +1,10 @@
+version: "3.3"
+services:
+  sql1:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    environment:
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+      - ACCEPT_EULA=Y
+    hostname: sql1
+    ports:
+      - "1433:1433"
