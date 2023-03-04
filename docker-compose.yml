@@ -1,10 +1,65 @@
-version: "3.3"
+version: "3.9"
 services:
-  sql1:
+  sourceapi:
+    build: ./sourcedb
+    ports:
+      - 8001:8000
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    volumes:
+      - ./sourcedb:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://sourceredis:6380
+      - CELERY_RESULT_BACKEND=redis://sourceredis:6380
+      - DB_NAME=${SOURCE_DB_NAME}
+      - DB_PASSWORD=${SOURCE_DB_PASSWORD}
+      - DB_USER=${SOURCE_DB_USER}
+      - DB_PORT=${SOURCE_DB_PORT}
+      - DB_HOST=sourcesql
+    depends_on:
+      - sourceredis
+      - sourcesql
+
+  sourceworker:
+    build: ./sourcedb
+    command: celery -A worker.celery worker  -Ofair --loglevel=info --logfile=logs/celery.log
+    volumes:
+      - ./sourcedb:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://sourceredis:6380
+      - CELERY_RESULT_BACKEND=redis://sourceredis:6380
+      - DB_NAME=${SOURCE_DB_NAME}
+      - DB_PASSWORD=${SOURCE_DB_PASSWORD}
+      - DB_USER=${SOURCE_DB_USER}
+      - DB_PORT=${SOURCE_DB_PORT}
+      - DB_HOST=sourcesql
+    deploy:
+      replicas: 3
+    depends_on:
+      - sourceapi
+      - sourceredis
+      - sourcesql
+
+  sourceredis:
+    image: redis:7.0.8-alpine
+    ports:
+      - 6380:6379
+
+  sourceflower:
+    image: mher/flower:1.2
+    command: celery --broker=redis://sourceredis:6380  flower --port=5555
+    ports:
+      - 5556:5555
+    depends_on:
+      - sourceredis
+      - sourceapi
+      - sourceworker
+
+  sourcesql:
     image: "mcr.microsoft.com/mssql/server:2022-latest"
+    ports:
+      - "1434:1433"
     environment:
       - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
       - ACCEPT_EULA=Y
-    hostname: sql1
-    ports:
-      - "1433:1433"
+    hostname: sourcesql
+    
