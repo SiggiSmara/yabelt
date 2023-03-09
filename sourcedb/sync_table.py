@@ -23,6 +23,8 @@ class SyncTable:
         self.table = self.reflect_table()
 
     def reflect_table(self, metadata_from_source: bool = None):
+        """reflect the data table from either the source or destination.  Supplied parameter 
+        overrides the  setting from when the class was initialized"""
         metadata_from_source = next(
             sub for sub in (metadata_from_source, self.metadata_from_source) if sub is not None
         )
