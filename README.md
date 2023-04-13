@@ -6,9 +6,9 @@ Yet Another Basic ELT Framework
 
 1. Choose your source db and destination db types from the available dbs via the `.env` file 
    (can also be defined via API calls).  Currently the focus is on Microsoft SQL server and PostgresSQL.  Possible others would be SQLite, Oracle DB and MySQL/MariaDB.
-2. Set up the source db and decide on the frequency of inserts and updates for each table.
-3. Start the source db process to populate the tables.
-4. Start the destination db sync process
+2. Set up the source db table definitions including the frequency of inserts and updates for each table. (API)
+3. Populate the tables in the destination db (API)
+4. Start the db sync process (API)
 5. Look at the latency table in the destination db for statistics on performance
 
 ## sql server on linux docker
