@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List
 from datetime import datetime
 
+
 class SyncTable:
     def __init__(
         self,
@@ -24,7 +25,9 @@ class SyncTable:
 
     def reflect_table(self, metadata_from_source: bool = None):
         metadata_from_source = next(
-            sub for sub in (metadata_from_source, self.metadata_from_source) if sub is not None
+            sub
+            for sub in (metadata_from_source, self.metadata_from_source)
+            if sub is not None
         )
         if metadata_from_source:
             return Table(
@@ -35,7 +38,7 @@ class SyncTable:
                 self.table_name, self.metadata, autoload_with=self.destination_engine
             )
 
-    def read_from_source(self, from_date:datetime=None, to_date:datetime=None):
+    def read_from_source(self, from_date: datetime = None, to_date: datetime = None):
         my_sel = select(self.table)
         if from_date is not None:
             my_sel = my_sel.where(self.table.c.moddt > from_date)
@@ -51,9 +54,9 @@ class SyncTable:
             if len(result_list) > 0:
                 self.write_to_destination(result_list=result_list)
 
-    def write_to_destination(self, result_list:List(Row)):
+    def write_to_destination(self, result_list: List(Row)):
         my_insert = insert(self.table)
-        my_rows = [arow._asdict()for arow in result_list]
+        my_rows = [arow._asdict() for arow in result_list]
         with self.destination_engine.connect() as conn:
             try:
                 result = conn.execute(my_insert, my_rows)
@@ -64,7 +67,9 @@ class SyncTable:
                 conn.rollback()
                 if len(result_list) == 1:
                     # try update
-                    logger.warning(f"Trying to recover from inegrity error in {self.table_name} by updating single record.")
+                    logger.warning(
+                        f"Trying to recover from inegrity error in {self.table_name} by updating single record."
+                    )
                     my_row = result_list[0]
                     my_update = update(self.table)
                     prim_names = []
@@ -72,7 +77,9 @@ class SyncTable:
                         my_update = my_update.where(one_p == my_row[one_p.name])
                         prim_names.append(one_p.name)
                     my_vals = {
-                        one_c.name: my_row[one_c.name] for one_c in self.table.c if one_c.name not in prim_names
+                        one_c.name: my_row[one_c.name]
+                        for one_c in self.table.c
+                        if one_c.name not in prim_names
                     }
                     my_update = my_update.values(**my_vals)
                     result = conn.execute(my_update)
@@ -81,9 +88,9 @@ class SyncTable:
                     conn.commit()
                 else:
                     # split in two and try again
-                    logger.warning(f"Trying to recover from inegrity error in {self.table_name} by splitting list in two.")
-                    mid = len(result_list)//2
+                    logger.warning(
+                        f"Trying to recover from inegrity error in {self.table_name} by splitting list in two."
+                    )
+                    mid = len(result_list) // 2
                     self.write_to_destination(result_list=result[:mid])
                     self.write_to_destination(result_list=result_list[mid:])
-
-           

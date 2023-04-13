@@ -4,7 +4,8 @@ Yet Another Basic ELT Framework
 
 ## Basic workflow
 
-1. Choose your source db and destination db types from the available dbs via the `.env` file.  Currently the focus is on Microsoft SQL server and PostgresSQL.  Possible others would be SQLite, Oracle DB and MySQL/MariaDB.
+1. Choose your source db and destination db types from the available dbs via the `.env` file 
+   (can also be defined via API calls).  Currently the focus is on Microsoft SQL server and PostgresSQL.  Possible others would be SQLite, Oracle DB and MySQL/MariaDB.
 2. Set up the source db and decide on the frequency of inserts and updates for each table.
 3. Start the source db process to populate the tables.
 4. Start the destination db sync process

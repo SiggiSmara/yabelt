@@ -10,41 +10,47 @@ from sqlalchemy.orm import mapped_column
 from .database import Base
 
 
-
 class MyState(enum.Enum):
     todo = 1
     doing = 2
     done = 3
 
+
 class UserBase(SQLModel):
-    email:str
-    is_active:bool = True
+    email: str
+    is_active: bool = True
+
 
 class ItemTypeBase(SQLModel):
-    title:str
-    description:str = None
+    title: str
+    description: str = None
+
 
 class ItemBase(SQLModel):
-    title:str
-    description:str = None
-    owner:UserBase
-    type:ItemTypeBase
+    title: str
+    description: str = None
+    owner: UserBase
+    type: ItemTypeBase
+
 
 class TaskBase(SQLModel):
-    title:str
-    description:str = None
-    owner:UserBase
-    state:MyState = MyState.todo
-    needs_items:List[ItemTypeBase] = None
+    title: str
+    description: str = None
+    owner: UserBase
+    state: MyState = MyState.todo
+    needs_items: List[ItemTypeBase] = None
+
 
 class ItemType(ItemTypeBase, table=True):
     id: int = Field(default=None, primary_key=True)
-    
+
+
 class Item(ItemBase, table=True):
     id: int = Field(default=None, primary_key=True)
+
+
 class User(UserBase, table=True):
     id: int = Field(default=None, primary_key=True)
-
 
 
 class Item(Base):
@@ -65,8 +71,8 @@ class Task(Base):
     title: Mapped[str] = mapped_column(String(50), index=True)
     description: Mapped[Optional[str]] = mapped_column(String(250), index=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    state: Mapped[MyState] = mapped_column(Enum(MyState), default=MyState.todo, index=True)
+    state: Mapped[MyState] = mapped_column(
+        Enum(MyState), default=MyState.todo, index=True
+    )
 
     owner: Mapped[List["User"]] = relationship(back_populates="tasks")
-
-

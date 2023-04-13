@@ -1,6 +1,7 @@
 import os
 import pyodbc
 from sqlalchemy import create_engine, URL
+
 # from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Session
@@ -24,19 +25,17 @@ url_object = URL.create(
     query={
         "driver": "ODBC Driver 17 for SQL Server",
         "autocommit": "True",
-    }
+    },
 )
 
 pyodbc.pooling = False
-engine = create_engine(url_object).execution_options(
-    isolation_level="AUTOCOMMIT"
-)
+engine = create_engine(url_object).execution_options(isolation_level="AUTOCOMMIT")
 
 # Base = declarative_base()
 class Base(DeclarativeBase):
     pass
 
+
 def get_session():
     with Session(engine) as session:
         yield session
-    
