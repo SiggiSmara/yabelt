@@ -9,7 +9,7 @@ pyodbc
 
 aiofiles==22.1.0
 celery==5.2.7
-fastapi==0.90.0
+fastapi==0.109.1
 flower==1.2.0
 Jinja2==3.1.2
 pytest==7.2.1
